@@ -1,5 +1,7 @@
 const http = require('http'),
-	fs = require('fs');
+	fs = require('fs'),
+	path = require('path'),
+	url = require('url');
 /*
 req -> IncomingMessage extending ReadableStream
 res -> ServerResponse extending WritableStream
@@ -7,10 +9,17 @@ res -> ServerResponse extending WritableStream
 
 const server = http.createServer(function(req, res){
 	console.log(`${req.method}\t${req.url}`);
-	
-	const fileContents = fs.readFileSync('./index.html');
-	res.write(fileContents);
-	res.end();
+	let urlObj = url.parse(req.url);
+	let resourceName = urlObj.pathname === '/' ? '/index.html' : urlObj.pathname,
+		resourceFullName = path.join(__dirname, resourceName);
+
+	if (!fs.existsSync(resourceFullName)){
+		res.statusCode = 404;
+		res.end();
+		return;
+	}
+	const stream = fs.createReadStream(resourceFullName);
+	stream.pipe(res);
 });
 
 server.listen(8080);

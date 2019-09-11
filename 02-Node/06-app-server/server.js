@@ -9,7 +9,7 @@ const server = http.createServer(function(req, res){
 	let urlObj = url.parse(req.url);
 	let resourceName = urlObj.pathname;
 
-	if (resourceName === '/calculator'){
+	if (resourceName === '/calculator' && req.method === 'GET'){
 		let queryData = querystring.parse(urlObj.query),
 			x = parseInt(queryData.x),
 			y = parseInt(queryData.y),
@@ -17,6 +17,20 @@ const server = http.createServer(function(req, res){
 			result = calculator[op](x,y);
 		res.write(result.toString());
 		res.end();
+	} if (resourceName === '/calculator' && req.method === 'POST'){
+		let rawData = '';
+		req.on('data', function(chunk){
+			rawData += chunk;
+		});
+		req.on('end', function(){
+			let bodyData = querystring.parse(rawData),
+				x = parseInt(bodyData.x),
+				y = parseInt(bodyData.y),
+				op = bodyData.op,
+				result = calculator[op](x,y);
+			res.write(result.toString());
+			res.end();	
+		})
 	} else {
 		res.statusCode = 404;
 		res.end();

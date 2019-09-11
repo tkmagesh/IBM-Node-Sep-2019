@@ -1,7 +1,7 @@
 const calculator = require('./calculator'),
 	querystring = require('querystring');
 
-module.exports = function(req, res){
+module.exports = function(req, res, next){
  	if (req.urlObj.pathname === '/calculator' && req.method === 'GET'){
 		let queryData = querystring.parse(req.urlObj.query),
 			x = parseInt(queryData.x),
@@ -10,6 +10,7 @@ module.exports = function(req, res){
 			result = calculator[op](x,y);
 		res.write(result.toString());
 		res.end();
+		next();
 	} else if (req.urlObj.pathname === '/calculator' && req.method === 'POST'){
 		let rawData = '';
 		req.on('data', function(chunk){
@@ -23,6 +24,9 @@ module.exports = function(req, res){
 				result = calculator[op](x,y);
 			res.write(result.toString());
 			res.end();	
+			next();
 		})
-	} 
+	} else {
+		next();
+	}
 }

@@ -1,11 +1,11 @@
-let taskList = [
-	{id : 1, name : 'Learn JavaScript', isCompleted : false},
-	{id : 2, name : 'Master Node.js', isCompleted : false},
-	{id : 3, name : 'Explore Bangalore', isCompleted : true}
-];
+const taskDao = require('./taskDao');
 
-function getAll(){
-	return [...taskList];
+
+
+function getAll(callback){
+	taskDao.readData(function(err, taskList){
+		callback(err, taskList);
+	})
 }
 
 function get(taskId){

@@ -5,8 +5,14 @@ const express = require('express'),
 
 
 router.get('/', function(req, res, next){
-	const taskList = taskService.getAll();
-	res.json(taskList);
+	taskService.getAll(function(err, taskList){
+		if (err){
+			next(err);
+		} else {
+			res.json(taskList);		
+		}
+	});
+	
 });
 
 router.get('/:id', function(req, res, next){

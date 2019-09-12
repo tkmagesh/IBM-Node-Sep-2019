@@ -36,11 +36,37 @@ function addAsyncPromise(x,y){
 	console.log(`	[@Service] processing ${x} and ${y}`);
 	var p = new Promise(function(resolveFn, rejectFn){
 		setTimeout(function(){
+			if (y === 0)
+				return rejectFn(new Error('Invalid arguments'));
 			var result = x + y;
 			console.log(`	[@Service] returning the result`);
 			resolveFn(result);
 		},4000);
-
 	});
 	return p;
+}
+
+async function addAsyncPromiseClient(x,y){
+	/*
+	console.log(`[@Client] triggering the service`);
+	var result = addSync(x,y);
+	console.log(`[@Client] result = ${result}`);
+	*/
+	/*
+	console.log(`[@Client] triggering the service`);
+	addSyncPromise(x,y)
+		.then(function(result){
+			console.log(`[@Client] result = ${result}`);		
+		})
+	*/
+
+	try{
+		console.log(`[@Client] triggering the service`);
+		var result = await addAsyncPromise(x,y);
+		console.log(`[@Client] result = ${result}`);
+	} catch (err){
+		console.log('something went wrong');
+		console.log(err);
+	}
+	
 }

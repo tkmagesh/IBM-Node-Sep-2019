@@ -36,6 +36,8 @@ router.get('/:id', async function(req, res, next){
 });
 
 router.post('/', async function(req, res, next){
+	req.session['taskCount'] = req.session['taskCount'] || 0;
+	++req.session.taskCount;
 	const newTaskData = req.body;
 	let newTask = await taskService.addNew(newTaskData);
 	res.status(201).json(newTask);
@@ -59,6 +61,10 @@ router.delete('/:id', async function(req, res, next){
 	} else {
 		res.status(404).end();
 	}
-})
+});
+
+router.get('/count', function(req, res, next){
+	res.json({ count : req.session.taskCount});
+});
 
 module.exports = router;

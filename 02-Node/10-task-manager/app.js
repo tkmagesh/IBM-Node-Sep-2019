@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var taskRouter = require('./routes/taskRoutes');
+var sessionService = require('./services/sessionService');
 
 var app = express();
 app.set('env', 'production');
@@ -21,6 +22,21 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(function(req, res, next){
+	if (req.headers['session-id']){
+		let existing_session = sessionService.getSession(req.headers['session-id'])
+		if (!existing_session){
+			let newSessionId = sessionService.createNew();
+			res.setHeader('session-id', newSessionId);
+			req['session'] = sessionService.getSession(newSessionId);
+		}
+	} else {
+		let newSessionId = sessionService.createNew();
+		res.setHeader('session-id', newSessionId);
+		req['session'] = sessionService.getSession(newSessionId);
+	}
+	next();
+})
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);

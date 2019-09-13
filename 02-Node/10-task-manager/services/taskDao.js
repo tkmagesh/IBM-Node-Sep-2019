@@ -1,4 +1,4 @@
-const path = require('path'),
+/*const path = require('path'),
 	fs = require('fs');
 
 const dataFile = path.join(__dirname, '../db/taskdb.json')
@@ -21,6 +21,20 @@ function saveData(taskList){
 			resolveFn(result);
 		});
 	});
+}*/
+
+var dbApi = require('./db')
+
+
+
+async function readData(){
+	var db = dbApi.get();
+	let tasks = await db.collection('tasks').find({}).toArray();
+	return tasks;
+}
+
+async function saveData(){
+
 }
 
 module.exports = { readData, saveData };
